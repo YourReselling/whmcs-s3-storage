@@ -1,0 +1,667 @@
+{
+  "contractDigest": "a6cdf1be65f4bcb63fd16c07820052f53ccff30819262ec5393061ac44e03956",
+  "operations": [
+    {
+      "method": "POST",
+      "path": "/products/s3-storage/order",
+      "source": "app/Http/Controllers/Api/V1/S3Storage/S3StorageApiController.php:103",
+      "required_fields": [
+        "friendly_name",
+        "size_gb"
+      ],
+      "response_id_path": "data.id",
+      "body": {
+        "type": "object",
+        "properties": {
+          "friendly_name": {
+            "type": "string",
+            "maxLength": 255,
+            "example": "Mein S3 Bucket",
+            "x-validation": [
+              "required",
+              "string",
+              "max:255"
+            ],
+            "x-validation-expressions": []
+          },
+          "location_id": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true,
+            "description": "Location UUID, oder null für Auto-Select",
+            "x-validation": [
+              "nullable",
+              "uuid",
+              "exists:s3_storage_locations,id"
+            ],
+            "x-validation-expressions": []
+          },
+          "size_gb": {
+            "type": "integer",
+            "minimum": 500,
+            "maximum": 20000,
+            "example": 500,
+            "x-validation": [
+              "required",
+              "integer",
+              "min:500",
+              "max:20000"
+            ],
+            "x-validation-expressions": []
+          },
+          "speed_mbps": {
+            "type": "integer",
+            "nullable": true,
+            "description": "Bandbreitenlimit in Mbit/s",
+            "minimum": 1,
+            "x-validation": [
+              "nullable",
+              "integer",
+              "min:1"
+            ],
+            "x-validation-expressions": []
+          },
+          "autoscaling_enabled": {
+            "type": "boolean",
+            "x-validation": [
+              "boolean"
+            ],
+            "x-validation-expressions": []
+          },
+          "autoscaling_scale_up_only": {
+            "type": "boolean",
+            "x-validation": [
+              "boolean"
+            ],
+            "x-validation-expressions": []
+          },
+          "autoscaling_lower_threshold": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100,
+            "nullable": true,
+            "x-validation": [
+              "nullable",
+              "integer",
+              "min:0",
+              "max:100"
+            ],
+            "x-validation-expressions": []
+          },
+          "autoscaling_upper_threshold": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100,
+            "nullable": true,
+            "x-validation": [
+              "nullable",
+              "integer",
+              "min:0",
+              "max:100"
+            ],
+            "x-validation-expressions": []
+          }
+        },
+        "additionalProperties": true,
+        "required": [
+          "friendly_name",
+          "size_gb"
+        ]
+      },
+      "bodyRequired": true,
+      "pathParameters": [],
+      "query": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": true
+      },
+      "permissions": [
+        "s3-storage:create"
+      ],
+      "responseMode": "json"
+    },
+    {
+      "id": "GET /products/s3-storage/{bucket}",
+      "group": "s3Storage",
+      "name": "get",
+      "method": "GET",
+      "path": "/products/s3-storage/{bucket}",
+      "summary": "Get S3 bucket details",
+      "description": "Returns full bucket details including S3 access credentials.",
+      "germanSummary": "S3 Bucket Details abrufen",
+      "permissions": [
+        "s3-storage:read"
+      ],
+      "authenticated": true,
+      "pathParameters": [
+        {
+          "name": "bucket",
+          "type": "string",
+          "description": "bucket"
+        }
+      ],
+      "query": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": true
+      },
+      "body": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": true
+      },
+      "bodyRequired": false,
+      "requestContentType": "application/json",
+      "responseMode": "json",
+      "responses": [
+        {
+          "status": 200,
+          "description": "Bucket details",
+          "germanDescription": "Bucket details",
+          "schema": null,
+          "example": null,
+          "contentType": "application/json"
+        }
+      ],
+      "deprecated": false,
+      "source": "app/Http/Controllers/Api/V1/S3Storage/S3StorageApiController.php:71",
+      "routeName": "api.s3-storage.show"
+    },
+    {
+      "method": "DELETE",
+      "path": "/products/s3-storage/{bucket}/delete",
+      "source": "app/Http/Controllers/Api/V1/S3Storage/S3StorageApiController.php:281",
+      "semantics": "terminate bucket",
+      "body": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": true
+      },
+      "bodyRequired": false,
+      "pathParameters": [
+        {
+          "name": "bucket",
+          "type": "string",
+          "description": "bucket"
+        }
+      ],
+      "query": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": true
+      },
+      "permissions": [
+        "s3-storage:delete"
+      ],
+      "responseMode": "json"
+    },
+    {
+      "id": "GET /products/s3-storage/{bucket}/folders",
+      "group": "s3Storage",
+      "name": "folders",
+      "method": "GET",
+      "path": "/products/s3-storage/{bucket}/folders",
+      "summary": "List folders in a bucket",
+      "description": "Returns the common prefixes (folders) directly under the given prefix in the bucket.",
+      "germanSummary": "Ordner in einem Bucket auflisten",
+      "permissions": [
+        "s3-storage:read"
+      ],
+      "authenticated": true,
+      "pathParameters": [
+        {
+          "name": "bucket",
+          "type": "string",
+          "description": "bucket"
+        }
+      ],
+      "query": {
+        "type": "object",
+        "properties": {
+          "prefix": {
+            "description": "Prefix to list folders under. Defaults to the bucket root.",
+            "type": "string"
+          }
+        },
+        "additionalProperties": true,
+        "required": []
+      },
+      "body": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": true
+      },
+      "bodyRequired": false,
+      "requestContentType": "application/json",
+      "responseMode": "json",
+      "responses": [
+        {
+          "status": 200,
+          "description": "List of folder prefixes",
+          "germanDescription": "List of folder prefixes",
+          "schema": null,
+          "example": null,
+          "contentType": "application/json"
+        }
+      ],
+      "deprecated": false,
+      "source": "app/Http/Controllers/Api/V1/S3Storage/S3StorageApiController.php:485",
+      "routeName": "api.s3-storage.folders"
+    },
+    {
+      "id": "GET /products/s3-storage/{bucket}/metrics",
+      "group": "s3Storage",
+      "name": "metrics",
+      "method": "GET",
+      "path": "/products/s3-storage/{bucket}/metrics",
+      "summary": "Get bucket usage metrics",
+      "description": "Returns time-series storage usage metrics for the requested period.",
+      "germanSummary": "Bucket-Nutzungsmetriken abrufen",
+      "permissions": [
+        "s3-storage:read"
+      ],
+      "authenticated": true,
+      "pathParameters": [
+        {
+          "name": "bucket",
+          "type": "string",
+          "description": "bucket"
+        }
+      ],
+      "query": {
+        "type": "object",
+        "properties": {
+          "period": {
+            "description": "day|week|month",
+            "type": "string",
+            "default": "day"
+          }
+        },
+        "additionalProperties": true,
+        "required": []
+      },
+      "body": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": true
+      },
+      "bodyRequired": false,
+      "requestContentType": "application/json",
+      "responseMode": "json",
+      "responses": [
+        {
+          "status": 200,
+          "description": "Time-series metrics",
+          "germanDescription": "Time-series metrics",
+          "schema": null,
+          "example": null,
+          "contentType": "application/json"
+        }
+      ],
+      "deprecated": false,
+      "source": "app/Http/Controllers/Api/V1/S3Storage/S3StorageApiController.php:397",
+      "routeName": "api.s3-storage.metrics"
+    },
+    {
+      "id": "GET /products/s3-storage/{bucket}/network-bandwidth",
+      "group": "s3Storage",
+      "name": "networkBandwidth",
+      "method": "GET",
+      "path": "/products/s3-storage/{bucket}/network-bandwidth",
+      "summary": "Get bucket network bandwidth",
+      "description": "Returns time-series network bandwidth metrics for the requested period.",
+      "germanSummary": "Bucket-Netzwerkbandbreite abrufen",
+      "permissions": [
+        "s3-storage:read"
+      ],
+      "authenticated": true,
+      "pathParameters": [
+        {
+          "name": "bucket",
+          "type": "string",
+          "description": "bucket"
+        }
+      ],
+      "query": {
+        "type": "object",
+        "properties": {
+          "period": {
+            "description": "day|week|month",
+            "type": "string",
+            "default": "day"
+          }
+        },
+        "additionalProperties": true,
+        "required": []
+      },
+      "body": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": true
+      },
+      "bodyRequired": false,
+      "requestContentType": "application/json",
+      "responseMode": "json",
+      "responses": [
+        {
+          "status": 200,
+          "description": "Time-series bandwidth",
+          "germanDescription": "Time-series bandwidth",
+          "schema": null,
+          "example": null,
+          "contentType": "application/json"
+        }
+      ],
+      "deprecated": false,
+      "source": "app/Http/Controllers/Api/V1/S3Storage/S3StorageApiController.php:424",
+      "routeName": "api.s3-storage.network-bandwidth"
+    },
+    {
+      "id": "GET /products/s3-storage/{bucket}/objects",
+      "group": "s3Storage",
+      "name": "objects",
+      "method": "GET",
+      "path": "/products/s3-storage/{bucket}/objects",
+      "summary": "List objects in a bucket",
+      "description": "Lists objects under the given prefix. Pass `token` to page through results, or `search` to filter objects across all nested keys by substring.",
+      "germanSummary": "Objekte in einem Bucket auflisten",
+      "permissions": [
+        "s3-storage:read"
+      ],
+      "authenticated": true,
+      "pathParameters": [
+        {
+          "name": "bucket",
+          "type": "string",
+          "description": "bucket"
+        }
+      ],
+      "query": {
+        "type": "object",
+        "properties": {
+          "prefix": {
+            "description": "Prefix to list objects under. Defaults to the bucket root.",
+            "type": "string"
+          },
+          "token": {
+            "description": "Continuation token from a previous truncated response.",
+            "type": "string"
+          },
+          "search": {
+            "description": "Substring filter applied across all nested object keys.",
+            "type": "string"
+          }
+        },
+        "additionalProperties": true,
+        "required": []
+      },
+      "body": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": true
+      },
+      "bodyRequired": false,
+      "requestContentType": "application/json",
+      "responseMode": "json",
+      "responses": [
+        {
+          "status": 200,
+          "description": "Objects and folders in the listing",
+          "germanDescription": "Objects and folders in the listing",
+          "schema": null,
+          "example": null,
+          "contentType": "application/json"
+        }
+      ],
+      "deprecated": false,
+      "source": "app/Http/Controllers/Api/V1/S3Storage/S3StorageApiController.php:512",
+      "routeName": "api.s3-storage.objects"
+    },
+    {
+      "id": "GET /products/s3-storage/{bucket}/usage",
+      "group": "s3Storage",
+      "name": "usage",
+      "method": "GET",
+      "path": "/products/s3-storage/{bucket}/usage",
+      "summary": "Get bucket usage",
+      "description": "Returns the current storage usage (bytes and object count) for the bucket.",
+      "germanSummary": "Bucket-Nutzung abrufen",
+      "permissions": [
+        "s3-storage:read"
+      ],
+      "authenticated": true,
+      "pathParameters": [
+        {
+          "name": "bucket",
+          "type": "string",
+          "description": "bucket"
+        }
+      ],
+      "query": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": true
+      },
+      "body": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": true
+      },
+      "bodyRequired": false,
+      "requestContentType": "application/json",
+      "responseMode": "json",
+      "responses": [
+        {
+          "status": 200,
+          "description": "Current usage",
+          "germanDescription": "Current usage",
+          "schema": null,
+          "example": null,
+          "contentType": "application/json"
+        }
+      ],
+      "deprecated": false,
+      "source": "app/Http/Controllers/Api/V1/S3Storage/S3StorageApiController.php:372",
+      "routeName": "api.s3-storage.usage"
+    },
+    {
+      "id": "GET /account",
+      "group": "account",
+      "name": "get",
+      "method": "GET",
+      "path": "/account",
+      "summary": "Get account details",
+      "description": "Returns the authenticated reseller account details including company information, contact details, tax information, enabled products, and credit balance.",
+      "germanSummary": "Kontoinformationen abrufen",
+      "permissions": [
+        "account:read"
+      ],
+      "authenticated": true,
+      "pathParameters": [],
+      "query": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": true
+      },
+      "body": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": true
+      },
+      "bodyRequired": false,
+      "requestContentType": "application/json",
+      "responseMode": "json",
+      "responses": [
+        {
+          "status": 200,
+          "description": "Account details",
+          "germanDescription": "Kontoinformationen",
+          "schema": null,
+          "example": {
+            "success": true,
+            "data": {
+              "id": "9e1a2b3c-4d5e-6f7a-8b9c-0d1e2f3a4b5c",
+              "company_name": "Example GmbH",
+              "contact_name": "Max Mustermann",
+              "email": "max@example.com",
+              "phone": "+49 123 456789",
+              "address": "Musterstraße 1",
+              "city": "Berlin",
+              "zip": "10115",
+              "country": "DE",
+              "tax_id": "DE123456789",
+              "tax_type": "eu_vat",
+              "status": "active",
+              "enabled_products": [
+                "rootserver",
+                "domains",
+                "kubernetes"
+              ],
+              "is_main_reseller": true,
+              "credit_limit": "500.00",
+              "credit_used": "123.45",
+              "credit_available": "376.55",
+              "created_at": "2025-01-15T10:30:00.000000Z"
+            }
+          },
+          "contentType": "application/json"
+        }
+      ],
+      "deprecated": false,
+      "source": "app/Http/Controllers/Api/V1/Account/AccountController.php:53",
+      "routeName": "api.account.show"
+    },
+    {
+      "id": "PATCH /account",
+      "group": "account",
+      "name": "update",
+      "method": "PATCH",
+      "path": "/account",
+      "summary": "Update account details",
+      "description": "Updates non-critical account fields such as company name, contact name, phone, and address. Email, tax ID, and status cannot be changed via API.",
+      "germanSummary": "Kontoinformationen aktualisieren",
+      "permissions": [
+        "account:update"
+      ],
+      "authenticated": true,
+      "pathParameters": [],
+      "query": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": true
+      },
+      "body": {
+        "type": "object",
+        "properties": {
+          "company_name": {
+            "type": "string",
+            "description": "Company name",
+            "example": "Example GmbH",
+            "maxLength": 255,
+            "x-validation": [
+              "sometimes",
+              "string",
+              "max:255"
+            ],
+            "x-validation-expressions": []
+          },
+          "contact_name": {
+            "type": "string",
+            "description": "Contact person name",
+            "example": "Max Mustermann",
+            "maxLength": 255,
+            "x-validation": [
+              "sometimes",
+              "string",
+              "max:255"
+            ],
+            "x-validation-expressions": []
+          },
+          "phone": {
+            "type": "string",
+            "description": "Phone number",
+            "example": "+49 123 456789",
+            "maxLength": 50,
+            "nullable": true,
+            "x-validation": [
+              "sometimes",
+              "nullable",
+              "string",
+              "max:50"
+            ],
+            "x-validation-expressions": []
+          },
+          "address": {
+            "type": "string",
+            "description": "Street address",
+            "example": "Musterstraße 1",
+            "maxLength": 255,
+            "x-validation": [
+              "sometimes",
+              "string",
+              "max:255"
+            ],
+            "x-validation-expressions": []
+          },
+          "city": {
+            "type": "string",
+            "description": "City",
+            "example": "Berlin",
+            "maxLength": 255,
+            "x-validation": [
+              "sometimes",
+              "string",
+              "max:255"
+            ],
+            "x-validation-expressions": []
+          },
+          "zip": {
+            "type": "string",
+            "description": "ZIP code",
+            "example": "10115",
+            "maxLength": 20,
+            "x-validation": [
+              "sometimes",
+              "string",
+              "max:20"
+            ],
+            "x-validation-expressions": []
+          }
+        },
+        "additionalProperties": true,
+        "required": []
+      },
+      "bodyRequired": false,
+      "requestContentType": "application/json",
+      "responseMode": "json",
+      "responses": [
+        {
+          "status": 200,
+          "description": "Account updated successfully",
+          "germanDescription": "Konto erfolgreich aktualisiert",
+          "schema": null,
+          "example": {
+            "success": true,
+            "data": {
+              "id": "9e1a2b3c-4d5e-6f7a-8b9c-0d1e2f3a4b5c",
+              "company_name": "Updated GmbH",
+              "contact_name": "Max Mustermann"
+            }
+          },
+          "contentType": "application/json"
+        },
+        {
+          "status": 422,
+          "description": "Validation error",
+          "germanDescription": "Validierungsfehler",
+          "schema": null,
+          "example": null,
+          "contentType": "application/json"
+        }
+      ],
+      "deprecated": false,
+      "source": "app/Http/Controllers/Api/V1/Account/AccountController.php:92",
+      "routeName": "api.account.update"
+    }
+  ]
+}

@@ -1,0 +1,775 @@
+{
+  "s3_storage": {
+    "slug": "s3_storage",
+    "create": {
+      "method": "POST",
+      "path": "/products/s3-storage/order",
+      "source": "app/Http/Controllers/Api/V1/S3Storage/S3StorageApiController.php:103",
+      "required_fields": [
+        "friendly_name",
+        "size_gb"
+      ],
+      "response_id_path": "data.id",
+      "body": {
+        "type": "object",
+        "properties": {
+          "friendly_name": {
+            "type": "string",
+            "maxLength": 255,
+            "example": "Mein S3 Bucket",
+            "x-validation": [
+              "required",
+              "string",
+              "max:255"
+            ],
+            "x-validation-expressions": []
+          },
+          "location_id": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true,
+            "description": "Location UUID, oder null für Auto-Select",
+            "x-validation": [
+              "nullable",
+              "uuid",
+              "exists:s3_storage_locations,id"
+            ],
+            "x-validation-expressions": []
+          },
+          "size_gb": {
+            "type": "integer",
+            "minimum": 500,
+            "maximum": 20000,
+            "example": 500,
+            "x-validation": [
+              "required",
+              "integer",
+              "min:500",
+              "max:20000"
+            ],
+            "x-validation-expressions": []
+          },
+          "speed_mbps": {
+            "type": "integer",
+            "nullable": true,
+            "description": "Bandbreitenlimit in Mbit/s",
+            "minimum": 1,
+            "x-validation": [
+              "nullable",
+              "integer",
+              "min:1"
+            ],
+            "x-validation-expressions": []
+          },
+          "autoscaling_enabled": {
+            "type": "boolean",
+            "x-validation": [
+              "boolean"
+            ],
+            "x-validation-expressions": []
+          },
+          "autoscaling_scale_up_only": {
+            "type": "boolean",
+            "x-validation": [
+              "boolean"
+            ],
+            "x-validation-expressions": []
+          },
+          "autoscaling_lower_threshold": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100,
+            "nullable": true,
+            "x-validation": [
+              "nullable",
+              "integer",
+              "min:0",
+              "max:100"
+            ],
+            "x-validation-expressions": []
+          },
+          "autoscaling_upper_threshold": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100,
+            "nullable": true,
+            "x-validation": [
+              "nullable",
+              "integer",
+              "min:0",
+              "max:100"
+            ],
+            "x-validation-expressions": []
+          }
+        },
+        "additionalProperties": true,
+        "required": [
+          "friendly_name",
+          "size_gb"
+        ]
+      },
+      "bodyRequired": true,
+      "pathParameters": [],
+      "query": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": true
+      },
+      "permissions": [
+        "s3-storage:create"
+      ],
+      "responseMode": "json"
+    },
+    "termination": {
+      "method": "DELETE",
+      "path": "/products/s3-storage/{bucket}/delete",
+      "source": "app/Http/Controllers/Api/V1/S3Storage/S3StorageApiController.php:281",
+      "semantics": "terminate bucket",
+      "body": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": true
+      },
+      "bodyRequired": false,
+      "pathParameters": [
+        {
+          "name": "bucket",
+          "type": "string",
+          "description": "bucket"
+        }
+      ],
+      "query": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": true
+      },
+      "permissions": [
+        "s3-storage:delete"
+      ],
+      "responseMode": "json"
+    },
+    "suspend": null,
+    "unsuspend": null,
+    "notes": [
+      "size_gb 500..20000; optional location_id, automatic cheapest active location otherwise",
+      "No suspend/unsuspend endpoint"
+    ],
+    "displayName": "S3 Storage",
+    "module": "yourresellings3storage",
+    "show": {
+      "id": "GET /products/s3-storage/{bucket}",
+      "group": "s3Storage",
+      "name": "get",
+      "method": "GET",
+      "path": "/products/s3-storage/{bucket}",
+      "summary": "Get S3 bucket details",
+      "description": "Returns full bucket details including S3 access credentials.",
+      "germanSummary": "S3 Bucket Details abrufen",
+      "permissions": [
+        "s3-storage:read"
+      ],
+      "authenticated": true,
+      "pathParameters": [
+        {
+          "name": "bucket",
+          "type": "string",
+          "description": "bucket"
+        }
+      ],
+      "query": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": true
+      },
+      "body": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": true
+      },
+      "bodyRequired": false,
+      "requestContentType": "application/json",
+      "responseMode": "json",
+      "responses": [
+        {
+          "status": 200,
+          "description": "Bucket details",
+          "germanDescription": "Bucket details",
+          "schema": null,
+          "example": null,
+          "contentType": "application/json"
+        }
+      ],
+      "deprecated": false,
+      "source": "app/Http/Controllers/Api/V1/S3Storage/S3StorageApiController.php:71",
+      "routeName": "api.s3-storage.show"
+    },
+    "showDataPath": "data",
+    "activeStatuses": [
+      "active"
+    ],
+    "views": {
+      "get": {
+        "id": "GET /products/s3-storage/{bucket}",
+        "group": "s3Storage",
+        "name": "get",
+        "method": "GET",
+        "path": "/products/s3-storage/{bucket}",
+        "summary": "Get S3 bucket details",
+        "description": "Returns full bucket details including S3 access credentials.",
+        "germanSummary": "S3 Bucket Details abrufen",
+        "permissions": [
+          "s3-storage:read"
+        ],
+        "authenticated": true,
+        "pathParameters": [
+          {
+            "name": "bucket",
+            "type": "string",
+            "description": "bucket"
+          }
+        ],
+        "query": {
+          "type": "object",
+          "properties": {},
+          "additionalProperties": true
+        },
+        "body": {
+          "type": "object",
+          "properties": {},
+          "additionalProperties": true
+        },
+        "bodyRequired": false,
+        "requestContentType": "application/json",
+        "responseMode": "json",
+        "responses": [
+          {
+            "status": 200,
+            "description": "Bucket details",
+            "germanDescription": "Bucket details",
+            "schema": null,
+            "example": null,
+            "contentType": "application/json"
+          }
+        ],
+        "deprecated": false,
+        "source": "app/Http/Controllers/Api/V1/S3Storage/S3StorageApiController.php:71",
+        "routeName": "api.s3-storage.show"
+      },
+      "folders": {
+        "id": "GET /products/s3-storage/{bucket}/folders",
+        "group": "s3Storage",
+        "name": "folders",
+        "method": "GET",
+        "path": "/products/s3-storage/{bucket}/folders",
+        "summary": "List folders in a bucket",
+        "description": "Returns the common prefixes (folders) directly under the given prefix in the bucket.",
+        "germanSummary": "Ordner in einem Bucket auflisten",
+        "permissions": [
+          "s3-storage:read"
+        ],
+        "authenticated": true,
+        "pathParameters": [
+          {
+            "name": "bucket",
+            "type": "string",
+            "description": "bucket"
+          }
+        ],
+        "query": {
+          "type": "object",
+          "properties": {
+            "prefix": {
+              "description": "Prefix to list folders under. Defaults to the bucket root.",
+              "type": "string"
+            }
+          },
+          "additionalProperties": true,
+          "required": []
+        },
+        "body": {
+          "type": "object",
+          "properties": {},
+          "additionalProperties": true
+        },
+        "bodyRequired": false,
+        "requestContentType": "application/json",
+        "responseMode": "json",
+        "responses": [
+          {
+            "status": 200,
+            "description": "List of folder prefixes",
+            "germanDescription": "List of folder prefixes",
+            "schema": null,
+            "example": null,
+            "contentType": "application/json"
+          }
+        ],
+        "deprecated": false,
+        "source": "app/Http/Controllers/Api/V1/S3Storage/S3StorageApiController.php:485",
+        "routeName": "api.s3-storage.folders"
+      },
+      "metrics": {
+        "id": "GET /products/s3-storage/{bucket}/metrics",
+        "group": "s3Storage",
+        "name": "metrics",
+        "method": "GET",
+        "path": "/products/s3-storage/{bucket}/metrics",
+        "summary": "Get bucket usage metrics",
+        "description": "Returns time-series storage usage metrics for the requested period.",
+        "germanSummary": "Bucket-Nutzungsmetriken abrufen",
+        "permissions": [
+          "s3-storage:read"
+        ],
+        "authenticated": true,
+        "pathParameters": [
+          {
+            "name": "bucket",
+            "type": "string",
+            "description": "bucket"
+          }
+        ],
+        "query": {
+          "type": "object",
+          "properties": {
+            "period": {
+              "description": "day|week|month",
+              "type": "string",
+              "default": "day"
+            }
+          },
+          "additionalProperties": true,
+          "required": []
+        },
+        "body": {
+          "type": "object",
+          "properties": {},
+          "additionalProperties": true
+        },
+        "bodyRequired": false,
+        "requestContentType": "application/json",
+        "responseMode": "json",
+        "responses": [
+          {
+            "status": 200,
+            "description": "Time-series metrics",
+            "germanDescription": "Time-series metrics",
+            "schema": null,
+            "example": null,
+            "contentType": "application/json"
+          }
+        ],
+        "deprecated": false,
+        "source": "app/Http/Controllers/Api/V1/S3Storage/S3StorageApiController.php:397",
+        "routeName": "api.s3-storage.metrics"
+      },
+      "networkBandwidth": {
+        "id": "GET /products/s3-storage/{bucket}/network-bandwidth",
+        "group": "s3Storage",
+        "name": "networkBandwidth",
+        "method": "GET",
+        "path": "/products/s3-storage/{bucket}/network-bandwidth",
+        "summary": "Get bucket network bandwidth",
+        "description": "Returns time-series network bandwidth metrics for the requested period.",
+        "germanSummary": "Bucket-Netzwerkbandbreite abrufen",
+        "permissions": [
+          "s3-storage:read"
+        ],
+        "authenticated": true,
+        "pathParameters": [
+          {
+            "name": "bucket",
+            "type": "string",
+            "description": "bucket"
+          }
+        ],
+        "query": {
+          "type": "object",
+          "properties": {
+            "period": {
+              "description": "day|week|month",
+              "type": "string",
+              "default": "day"
+            }
+          },
+          "additionalProperties": true,
+          "required": []
+        },
+        "body": {
+          "type": "object",
+          "properties": {},
+          "additionalProperties": true
+        },
+        "bodyRequired": false,
+        "requestContentType": "application/json",
+        "responseMode": "json",
+        "responses": [
+          {
+            "status": 200,
+            "description": "Time-series bandwidth",
+            "germanDescription": "Time-series bandwidth",
+            "schema": null,
+            "example": null,
+            "contentType": "application/json"
+          }
+        ],
+        "deprecated": false,
+        "source": "app/Http/Controllers/Api/V1/S3Storage/S3StorageApiController.php:424",
+        "routeName": "api.s3-storage.network-bandwidth"
+      },
+      "objects": {
+        "id": "GET /products/s3-storage/{bucket}/objects",
+        "group": "s3Storage",
+        "name": "objects",
+        "method": "GET",
+        "path": "/products/s3-storage/{bucket}/objects",
+        "summary": "List objects in a bucket",
+        "description": "Lists objects under the given prefix. Pass `token` to page through results, or `search` to filter objects across all nested keys by substring.",
+        "germanSummary": "Objekte in einem Bucket auflisten",
+        "permissions": [
+          "s3-storage:read"
+        ],
+        "authenticated": true,
+        "pathParameters": [
+          {
+            "name": "bucket",
+            "type": "string",
+            "description": "bucket"
+          }
+        ],
+        "query": {
+          "type": "object",
+          "properties": {
+            "prefix": {
+              "description": "Prefix to list objects under. Defaults to the bucket root.",
+              "type": "string"
+            },
+            "token": {
+              "description": "Continuation token from a previous truncated response.",
+              "type": "string"
+            },
+            "search": {
+              "description": "Substring filter applied across all nested object keys.",
+              "type": "string"
+            }
+          },
+          "additionalProperties": true,
+          "required": []
+        },
+        "body": {
+          "type": "object",
+          "properties": {},
+          "additionalProperties": true
+        },
+        "bodyRequired": false,
+        "requestContentType": "application/json",
+        "responseMode": "json",
+        "responses": [
+          {
+            "status": 200,
+            "description": "Objects and folders in the listing",
+            "germanDescription": "Objects and folders in the listing",
+            "schema": null,
+            "example": null,
+            "contentType": "application/json"
+          }
+        ],
+        "deprecated": false,
+        "source": "app/Http/Controllers/Api/V1/S3Storage/S3StorageApiController.php:512",
+        "routeName": "api.s3-storage.objects"
+      },
+      "usage": {
+        "id": "GET /products/s3-storage/{bucket}/usage",
+        "group": "s3Storage",
+        "name": "usage",
+        "method": "GET",
+        "path": "/products/s3-storage/{bucket}/usage",
+        "summary": "Get bucket usage",
+        "description": "Returns the current storage usage (bytes and object count) for the bucket.",
+        "germanSummary": "Bucket-Nutzung abrufen",
+        "permissions": [
+          "s3-storage:read"
+        ],
+        "authenticated": true,
+        "pathParameters": [
+          {
+            "name": "bucket",
+            "type": "string",
+            "description": "bucket"
+          }
+        ],
+        "query": {
+          "type": "object",
+          "properties": {},
+          "additionalProperties": true
+        },
+        "body": {
+          "type": "object",
+          "properties": {},
+          "additionalProperties": true
+        },
+        "bodyRequired": false,
+        "requestContentType": "application/json",
+        "responseMode": "json",
+        "responses": [
+          {
+            "status": 200,
+            "description": "Current usage",
+            "germanDescription": "Current usage",
+            "schema": null,
+            "example": null,
+            "contentType": "application/json"
+          }
+        ],
+        "deprecated": false,
+        "source": "app/Http/Controllers/Api/V1/S3Storage/S3StorageApiController.php:372",
+        "routeName": "api.s3-storage.usage"
+      }
+    },
+    "controls": {},
+    "customerFields": [],
+    "fields": [
+      {
+        "name": "friendly_name",
+        "path": false,
+        "required": true,
+        "label": "Name",
+        "type": "string",
+        "maxLength": 255,
+        "example": "Mein S3 Bucket",
+        "x-validation": [
+          "required",
+          "string",
+          "max:255"
+        ],
+        "x-validation-expressions": []
+      },
+      {
+        "name": "size_gb",
+        "path": false,
+        "required": true,
+        "label": "Speicher (GB)",
+        "type": "integer",
+        "minimum": 500,
+        "maximum": 20000,
+        "example": 500,
+        "x-validation": [
+          "required",
+          "integer",
+          "min:500",
+          "max:20000"
+        ],
+        "x-validation-expressions": []
+      },
+      {
+        "name": "autoscaling_enabled",
+        "path": false,
+        "required": false,
+        "label": "autoscaling_enabled",
+        "type": "boolean",
+        "x-validation": [
+          "boolean"
+        ],
+        "x-validation-expressions": []
+      },
+      {
+        "name": "autoscaling_lower_threshold",
+        "path": false,
+        "required": false,
+        "label": "autoscaling_lower_threshold",
+        "type": "integer",
+        "minimum": 0,
+        "maximum": 100,
+        "nullable": true,
+        "x-validation": [
+          "nullable",
+          "integer",
+          "min:0",
+          "max:100"
+        ],
+        "x-validation-expressions": []
+      },
+      {
+        "name": "autoscaling_scale_up_only",
+        "path": false,
+        "required": false,
+        "label": "autoscaling_scale_up_only",
+        "type": "boolean",
+        "x-validation": [
+          "boolean"
+        ],
+        "x-validation-expressions": []
+      },
+      {
+        "name": "autoscaling_upper_threshold",
+        "path": false,
+        "required": false,
+        "label": "autoscaling_upper_threshold",
+        "type": "integer",
+        "minimum": 0,
+        "maximum": 100,
+        "nullable": true,
+        "x-validation": [
+          "nullable",
+          "integer",
+          "min:0",
+          "max:100"
+        ],
+        "x-validation-expressions": []
+      },
+      {
+        "name": "location_id",
+        "path": false,
+        "required": false,
+        "label": "Standort-ID",
+        "type": "string",
+        "format": "uuid",
+        "nullable": true,
+        "description": "Location UUID, oder null für Auto-Select",
+        "x-validation": [
+          "nullable",
+          "uuid",
+          "exists:s3_storage_locations,id"
+        ],
+        "x-validation-expressions": []
+      },
+      {
+        "name": "speed_mbps",
+        "path": false,
+        "required": false,
+        "label": "speed_mbps",
+        "type": "integer",
+        "nullable": true,
+        "description": "Bandbreitenlimit in Mbit/s",
+        "minimum": 1,
+        "x-validation": [
+          "nullable",
+          "integer",
+          "min:1"
+        ],
+        "x-validation-expressions": []
+      }
+    ],
+    "configFields": [
+      {
+        "name": "friendly_name",
+        "path": false,
+        "required": true,
+        "label": "Name",
+        "type": "string",
+        "maxLength": 255,
+        "example": "Mein S3 Bucket",
+        "x-validation": [
+          "required",
+          "string",
+          "max:255"
+        ],
+        "x-validation-expressions": []
+      },
+      {
+        "name": "size_gb",
+        "path": false,
+        "required": true,
+        "label": "Speicher (GB)",
+        "type": "integer",
+        "minimum": 500,
+        "maximum": 20000,
+        "example": 500,
+        "x-validation": [
+          "required",
+          "integer",
+          "min:500",
+          "max:20000"
+        ],
+        "x-validation-expressions": []
+      },
+      {
+        "name": "autoscaling_enabled",
+        "path": false,
+        "required": false,
+        "label": "autoscaling_enabled",
+        "type": "boolean",
+        "x-validation": [
+          "boolean"
+        ],
+        "x-validation-expressions": []
+      },
+      {
+        "name": "autoscaling_lower_threshold",
+        "path": false,
+        "required": false,
+        "label": "autoscaling_lower_threshold",
+        "type": "integer",
+        "minimum": 0,
+        "maximum": 100,
+        "nullable": true,
+        "x-validation": [
+          "nullable",
+          "integer",
+          "min:0",
+          "max:100"
+        ],
+        "x-validation-expressions": []
+      },
+      {
+        "name": "autoscaling_scale_up_only",
+        "path": false,
+        "required": false,
+        "label": "autoscaling_scale_up_only",
+        "type": "boolean",
+        "x-validation": [
+          "boolean"
+        ],
+        "x-validation-expressions": []
+      },
+      {
+        "name": "autoscaling_upper_threshold",
+        "path": false,
+        "required": false,
+        "label": "autoscaling_upper_threshold",
+        "type": "integer",
+        "minimum": 0,
+        "maximum": 100,
+        "nullable": true,
+        "x-validation": [
+          "nullable",
+          "integer",
+          "min:0",
+          "max:100"
+        ],
+        "x-validation-expressions": []
+      },
+      {
+        "name": "location_id",
+        "path": false,
+        "required": false,
+        "label": "Standort-ID",
+        "type": "string",
+        "format": "uuid",
+        "nullable": true,
+        "description": "Location UUID, oder null für Auto-Select",
+        "x-validation": [
+          "nullable",
+          "uuid",
+          "exists:s3_storage_locations,id"
+        ],
+        "x-validation-expressions": []
+      },
+      {
+        "name": "speed_mbps",
+        "path": false,
+        "required": false,
+        "label": "speed_mbps",
+        "type": "integer",
+        "nullable": true,
+        "description": "Bandbreitenlimit in Mbit/s",
+        "minimum": 1,
+        "x-validation": [
+          "nullable",
+          "integer",
+          "min:1"
+        ],
+        "x-validation-expressions": []
+      }
+    ]
+  }
+}
